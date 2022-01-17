@@ -5,6 +5,7 @@ import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRig
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase.config";
 import TextField from "@mui/material/TextField";
+import OAuth from "../components/OAuth";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ export default function SignIn() {
               </button>
             </div>
           </form>
+          <OAuth />
           <Link className="registerLink" to="/signup">
             Don't have an account? Sign up
           </Link>
