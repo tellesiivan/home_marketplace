@@ -31,7 +31,7 @@ export default function SignIn() {
       );
       if (userCredentials.user) {
         // navigate to home
-        navigate("/", { replace: true });
+        navigate("/profile", { replace: true });
       }
     } catch (error) {
       toast.error("Bad user credentials");

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase.config";
@@ -63,7 +63,7 @@ export default function Profile() {
             className="changePersonalDetails"
             onClick={() => {
               changeDetails && onSubmit();
-              // toggle state to oposite of previous value
+              // toggle state to opposite of previous value
               setChangeDetails((prev) => !prev);
             }}
           >
