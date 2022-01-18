@@ -24,6 +24,11 @@ button {
   outline: none;
   border: none;
 }
+.avatar {
+  height: 34px;
+  width: 34px;
+  border-radius: 100px;
+}
 
 .input,
 .passwordInput,
@@ -399,6 +404,9 @@ button {
   align-items: center;
   margin-bottom: 1rem;
   position: relative;
+  background-color: white;
+  border-radius: 3px;
+  padding: 8px;
 }
 
 .categoryListingLink {
@@ -408,7 +416,7 @@ button {
 .categoryListingImg {
   width: 30%;
   height: 100px;
-  border-radius: 1.5rem;
+  border-radius: 4px;
   object-fit: cover;
 }
 @media (min-width: 1024px) {

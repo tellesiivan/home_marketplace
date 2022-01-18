@@ -7,6 +7,7 @@ import { setDoc, doc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase.config";
 import TextField from "@mui/material/TextField";
 import OAuth from "../components/OAuth";
+import AOuth_2 from "../components/AOuth_2";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -111,7 +112,7 @@ export default function Signup() {
           <Link className="registerLink" to="/signin">
             Already have an account? Sign in
           </Link>
-          <OAuth />
+          <AOuth_2 />
         </main>
       </div>
     </>

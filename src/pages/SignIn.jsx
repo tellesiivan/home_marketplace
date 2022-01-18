@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase.config";
 import TextField from "@mui/material/TextField";
 import OAuth from "../components/OAuth";
+import AOuth_2 from "../components/AOuth_2";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ export default function SignIn() {
               </button>
             </div>
           </form>
-          <OAuth />
+          <AOuth_2 />
           <Link className="registerLink" to="/signup">
             Don't have an account? Sign up
           </Link>

@@ -2,6 +2,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ReactComponent as OfferIcon } from "../assets/svg/localOfferIcon.svg";
 import { ReactComponent as ExploreIcon } from "../assets/svg/exploreIcon.svg";
 import { ReactComponent as Avatar } from "../assets/svg/personOutlineIcon.svg";
+import useAuthStatus from "../hooks/useAuthStatus";
+import { auth } from "../firebase.config";
+import { db } from "../firebase.config";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -31,7 +35,7 @@ export default function NavBar() {
               width="24px"
               height="24px"
             />
-            <p style={{ color: `${pathMatchRoute("/offers")}` }}> Offer</p>
+            <p style={{ color: `${pathMatchRoute("/offers")}` }}>Offers</p>
           </li>
           <li className="navbarListItem" onClick={() => navigate("/profile")}>
             <Avatar
