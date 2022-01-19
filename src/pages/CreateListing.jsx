@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { auth } from "../firebase.config";
+import { auth, storage, db } from "../firebase.config";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoad from "../components/SkeletonLoad";
 import { toast } from "react-toastify";
+import { v4 as uuidV4 } from "uuid";
 
 export default function CreateListing() {
   const navigate = useNavigate();
@@ -108,8 +111,7 @@ export default function CreateListing() {
         data.status === "ZERO_RESULTS"
           ? undefined
           : data.results[0].formatted_address;
-      console.log(data);
-      console.log(location);
+
       if (location === undefined || location.includes("undefined")) {
         // if address entered is not correct return
         setLoading(false);
@@ -120,10 +122,86 @@ export default function CreateListing() {
       // if geolocation NOT enabled, set geolocation object to values entered in form
       geolocation.lat = latitude;
       geolocation.lng = longitude;
-      location = address;
     }
 
+    // store image on firebase (loop to store all images)
+    async function storeImage(img) {
+      return new Promise((resolve, reject) => {
+        const fileName = `${auth.currentUser.uid}_${img.name}_${uuidV4()}`; // set file name
+
+        const storageRef = ref(storage, "images/" + fileName); // set reference to storage
+
+        const uploadTask = uploadBytesResumable(storageRef, img); // upload task
+
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            reject(error);
+          },
+          () => {
+            // Handle successful uploads on complete
+            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              resolve(downloadURL);
+            });
+          }
+        );
+      });
+    }
+
+    const imgUrls = await Promise.all(
+      [...images].map((image) => storeImage(image))
+    ).catch(() => {
+      setLoading(false);
+      toast.error("Unable to upload images");
+      return;
+    });
+
+    // create copy of form data and add images + lat/long coordinates if enabled
+    const formDataCopy = {
+      ...formData,
+      imgUrls,
+      geolocation,
+      timestamp: serverTimestamp(),
+    };
+
+    delete formDataCopy.images;
+    delete formDataCopy.address;
+
+    formDataCopy.location = address;
+    // if location exists add it to formDataCopy object
+    location && (formDataCopy.location = location);
+    //if offer is false, delete discountedPrice price
+    !formDataCopy.offer && delete formDataCopy.discountedPrice;
+    // if geolocation enabled, delete lat/lng single coordinates
+    formDataCopy.geolocation &&
+      delete formDataCopy.latitude &&
+      delete formDataCopy.longitude;
+
+    console.log(formDataCopy);
+
+    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+
     setLoading(false);
+
+    toast.success("Listing has been added");
+
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   }
 
   if (loading) return <SkeletonLoad />;
